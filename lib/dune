@@ -1,0 +1,6 @@
+(library
+ (name mdxpath)
+ (public_name mdxpath)
+ (wrapped false))
+
+(include_subdirs unqualified)

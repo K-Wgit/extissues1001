@@ -1,0 +1,57 @@
+
+
+
+# secrets manangement
+.envrc
+.env
+
+
+# MacOS
+**/.DS_Store
+
+# opam
+/_opam
+
+
+# dune working directory
+_build/
+duniverse/
+
+# node
+node_modules
+build
+npm-debug.log
+
+# Editors
+# Merlin files for non lsp/dune editors and coq
+.merlin
+# temp files
+*~
+
+#-------- ocaml and toolchain related -----
+# should be unneccessary with dune
+*.annot
+*.cmo
+*.cma
+*.cmi
+*.a
+*.o
+*.cmx
+*.cmxs
+*.cmxa
+*.byte
+*.native
+
+# oasis generated files
+setup.data
+setup.log
+
+# Dune generated files
+*.install
+
+#-------  node javascript typescript svelte and toolchaine related ----
+
+
+
+
+

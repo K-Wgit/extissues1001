@@ -1,0 +1,6 @@
+profile = conventional
+version = 0.21.0
+# Reproductible build: do not go outside -- does not work
+# enable-outside-detected-project = false
+wrap-comments = false   # default, not required
+margin = 90
