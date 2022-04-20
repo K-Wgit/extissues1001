@@ -1,4 +1,13 @@
 
+<!-- Thank you for filing an issue to help us improve Dune! -->
+## Expected Behavior
+In markdown files, code blocks with file sync feature - file attribute `ocaml file=...` - do not resolve correctly when non downwards path are used.
+This makes it impossible to have a `docs` directory not below the code.  
+Trying to do that is either plain error, buggy or not working 
+- relative path not limited to downwards path to access siblings such as `ocaml file ../lib/file.ml`
+- absolute path from workspace root `ocaml file=/lib/file.ml`
+
+This is also true for the comment syntax `$MDX file=...`
 
 ### 
 
@@ -7,35 +16,45 @@ $ echo "--- path resolution issues with dune and mdx ---"
 --- path resolution issues with dune and mdx ---
 ```
 
-## both ocaml file=... an $MDX file ... in quote do not work
+
+## Actual Behavior
+
 
 ## syblying
 ```
-with   ocaml file=../core/patt.ml,part=snippet 
-
-dune runtest .
 Error: path outside the workspace: ../core/patt.ml from .
--> required by _build/default/lib/docs/.mdx/testmdx.md.corrected
+-> required by _build/default/lib/docs/.mdx/testmdx1.md.corrected
 -> required by alias lib/docs/runtest in lib/docs/dune:1
-```
-
-## path is expanded downward only
-
-```
-with   ocaml file=lib/core/patt.ml,part=snippet
-dune runtest .
 File "lib/docs/dune", line 1, characters 0-24:
 1 | (mdx
 2 |  (package mdxpath))
+
+```
+
+## relative path is expanded downward only
+normal behaviour the error is expected
+```
 Error: No rule found for lib/docs/lib/core/patt.ml
+File "README.md", line 1, characters 0-0:
 
 ```
 
-## absolute path not from workspace root
+## absolute path not from workspace root - error
 ```
-with   ocaml file=/lib/core/patt.ml,part=snippet
+Internal error, please report upstream including the contents of _build/log.
+Description:
+  ("Local.relative: received absolute path",
+  { t = "."; path = "/lib/core/patt.ml" })
+.... see trace ....
+```
 
-dune runtest .
+### Some trace
+
+
+```
+$ dune runtest .
+
+dune runtest
 Internal error, please report upstream including the contents of _build/log.
 Description:
   ("Local.relative: received absolute path",
@@ -67,7 +86,7 @@ Called from Fiber.Scheduler.exec in file "src/fiber/fiber.ml", line 854,
 -> required by ("Rule.make", ())
 -> required by
    ("execute-rule",
-   { id = 45
+   { id = 49
    ; info =
        From_dune_file
          { pos_fname = "lib/docs/dune"
@@ -77,16 +96,65 @@ Called from Fiber.Scheduler.exec in file "src/fiber/fiber.ml", line 854,
    })
 -> required by ("<unnamed>", ())
 -> required by
-   ("build-file", In_build_dir "default/lib/docs/.mdx/testmdx.md.corrected")
+   ("build-file", In_build_dir "default/lib/docs/.mdx/testmdx3.md.corrected")
 -> required by ("<unnamed>", ())
 -> required by
    ("build-alias", { dir = "default/lib/docs"; name = "runtest" })
 -> required by ("toplevel", ())
+
+I must not crash.  Uncertainty is the mind-killer. Exceptions are the
+little-death that brings total obliteration.  I will fully express my cases.
+Execution will pass over me and through me.  And when it has gone past, I
+will unwind the stack along its path.  Where the cases are handled there will
+be nothing.  Only I will remain.
+Error: path outside the workspace: ../core/patt.ml from .
+-> required by _build/default/lib/docs/.mdx/testmdx1.md.corrected
+-> required by alias lib/docs/runtest in lib/docs/dune:1
+File "lib/docs/dune", line 1, characters 0-24:
+1 | (mdx
+2 |  (package mdxpath))
+Error: No rule found for lib/docs/lib/core/patt.ml
+File "README.md", line 1, characters 0-0:
+diff --git a/_build/default/README.md b/_build/default/.mdx/README.md.corrected
+index 8f35f3d..ad5349e 100644
+--- a/_build/default/README.md
++++ b/_build/default/.mdx/README.md.corrected
+@@ -96,7 +96,10 @@ $ ocamlc --version
+ $ ocaml-mdx --version
+ 2.1.0
+ $ ocaml-mdx deps lib/docs/testmdx.md
+-()
++ocaml-mdx: FILE argument: no 'lib/docs/testmdx.md' file
++Usage: ocaml-mdx deps [OPTION]… FILE
++Try 'ocaml-mdx deps --help' or 'ocaml-mdx --help' for more information.
++[124]
+ $ tree --gitignore -I _opam
+ .
+ ├── META.mdxpath
+@@ -107,7 +110,9 @@ $ tree --gitignore -I _opam
+ │   ├── docs
+ │   │   ├── mdx_gen.bc
+ │   │   ├── mdx_gen.ml-gen
+-│   │   └── testmdx.md
++│   │   ├── testmdx1.md
++│   │   ├── testmdx2.md
++│   │   └── testmdx3.md
+ │   ├── mdxpath.a
+ │   ├── mdxpath.cma
+ │   ├── mdxpath.cmxa
+@@ -118,6 +123,6 @@ $ tree --gitignore -I _opam
+ ├── mdxpath.install
+ └── mdxpath.opam
+
+-3 directories, 15 files
++3 directories, 17 files
 ```
 
+** why is mdx adding junk in my directory during the build, even temporarily **
 
-### Some trace
-why is mdx adding junk in my directory during the build, even temporarily
+### Versions
+
+
 
 ```sh
 $ dune --version
@@ -96,28 +164,9 @@ $ ocamlc --version
 $ ocaml-mdx --version
 2.1.0
 $ ocaml-mdx deps lib/docs/testmdx.md
-()
-$ tree --gitignore -I _opam
-.
-├── META.mdxpath
-├── README.md
-├── lib
-│   ├── core
-│   │   └── patt.ml
-│   ├── docs
-│   │   ├── mdx_gen.bc
-│   │   ├── mdx_gen.ml-gen
-│   │   └── testmdx.md
-│   ├── mdxpath.a
-│   ├── mdxpath.cma
-│   ├── mdxpath.cmxa
-│   └── mdxpath.cmxs
-├── mdx_gen.bc
-├── mdx_gen.ml-gen
-├── mdxpath.dune-package
-├── mdxpath.install
-└── mdxpath.opam
-
-3 directories, 15 files
+ocaml-mdx: FILE argument: no 'lib/docs/testmdx.md' file
+Usage: ocaml-mdx deps [OPTION]… FILE
+Try 'ocaml-mdx deps --help' or 'ocaml-mdx --help' for more information.
+[124]
 ```
 

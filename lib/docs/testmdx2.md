@@ -8,6 +8,6 @@
 - : int = 5
 ```
 
-### but not with a path not directly downstream 
+### noraml behaviour, but on error since the file is not downwards 
 ```ocaml file=lib/core/patt.ml,part=snippet
 ```
