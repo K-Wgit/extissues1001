@@ -1,6 +1,6 @@
 (library
- (name mdxpath)
- (public_name mdxpath)
+ (name extissues1001)
+ (public_name extissues1001)
  (wrapped false))
 
 (include_subdirs unqualified)

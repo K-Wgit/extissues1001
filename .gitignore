@@ -1,5 +1,12 @@
 
 
+#--- Original template for .gitignore  ---
+# this file can not be symlinked (git limitation)
+# It is intended to be a unique file for all project for now
+# until a bootstrap procedure allows to build a compound version
+
+
+
 
 # secrets manangement
 .envrc

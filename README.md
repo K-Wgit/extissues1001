@@ -1,9 +1,13 @@
 
+
+## Issue opened at
+[dune issue 5596 ](https://github.com/ocaml/dune/issues/5596)
+
 <!-- Thank you for filing an issue to help us improve Dune! -->
 ## Expected Behavior
 In markdown files, code blocks with file sync feature - file attribute `ocaml file=...` - do not resolve correctly when non downwards path are used.
 This makes it impossible to have a `docs` directory not below the code.  
-Trying to do that is either plain error, buggy or not working 
+Trying to do that is either plain error, buggy or not working. Code should work with:
 - relative path not limited to downwards path to access siblings such as `ocaml file ../lib/file.ml`
 - absolute path from workspace root `ocaml file=/lib/file.ml`
 
@@ -20,14 +24,14 @@ $ echo "--- path resolution issues with dune and mdx ---"
 ## Actual Behavior
 
 
-## syblying
+## Sibling
 ```
 Error: path outside the workspace: ../core/patt.ml from .
 -> required by _build/default/lib/docs/.mdx/testmdx1.md.corrected
 -> required by alias lib/docs/runtest in lib/docs/dune:1
 File "lib/docs/dune", line 1, characters 0-24:
 1 | (mdx
-2 |  (package mdxpath))
+2 |  (package extissues1001))
 
 ```
 
@@ -47,6 +51,42 @@ Description:
   { t = "."; path = "/lib/core/patt.ml" })
 .... see trace ....
 ```
+
+### Can be reproduced at
+https://github.com/K-Wgit/extissues1001
+
+
+### Versions and environment
+
+```sh
+$ dune --version
+3.1.0
+$ ocamlc --version
+4.14.0
+$ ocaml-mdx --version
+2.1.0
+$ ocaml-mdx deps lib/docs/testmdx1.md
+((4:file15:../core/patt.ml))
+$ tree -I _build -I _opam ../../
+../../
+├── README.md
+├── dune
+├── dune-project
+├── extissues1001.opam
+└── lib
+    ├── core
+    │   └── patt.ml
+    ├── docs
+    │   ├── dune
+    │   ├── testmdx1.md
+    │   ├── testmdx2.md
+    │   └── testmdx3.md
+    └── dune
+
+3 directories, 10 files
+```
+
+
 
 ### Some trace
 
@@ -112,7 +152,7 @@ Error: path outside the workspace: ../core/patt.ml from .
 -> required by alias lib/docs/runtest in lib/docs/dune:1
 File "lib/docs/dune", line 1, characters 0-24:
 1 | (mdx
-2 |  (package mdxpath))
+2 |  (package extissues1001))
 Error: No rule found for lib/docs/lib/core/patt.ml
 File "README.md", line 1, characters 0-0:
 diff --git a/_build/default/README.md b/_build/default/.mdx/README.md.corrected
@@ -130,7 +170,7 @@ index 8f35f3d..ad5349e 100644
 +[124]
  $ tree --gitignore -I _opam
  .
- ├── META.mdxpath
+ ├── META.extissues1001
 @@ -107,7 +110,9 @@ $ tree --gitignore -I _opam
  │   ├── docs
  │   │   ├── mdx_gen.bc
@@ -139,34 +179,16 @@ index 8f35f3d..ad5349e 100644
 +│   │   ├── testmdx1.md
 +│   │   ├── testmdx2.md
 +│   │   └── testmdx3.md
- │   ├── mdxpath.a
- │   ├── mdxpath.cma
- │   ├── mdxpath.cmxa
+ │   ├── extissues1001.a
+ │   ├── extissues1001.cma
+ │   ├── extissues1001.cmxa
 @@ -118,6 +123,6 @@ $ tree --gitignore -I _opam
- ├── mdxpath.install
- └── mdxpath.opam
+ ├── extissues1001.install
+ └── extissues1001.opam
 
 -3 directories, 15 files
 +3 directories, 17 files
 ```
 
-** why is mdx adding junk in my directory during the build, even temporarily **
 
-### Versions
-
-
-
-```sh
-$ dune --version
-3.1.0
-$ ocamlc --version
-4.14.0
-$ ocaml-mdx --version
-2.1.0
-$ ocaml-mdx deps lib/docs/testmdx.md
-ocaml-mdx: FILE argument: no 'lib/docs/testmdx.md' file
-Usage: ocaml-mdx deps [OPTION]… FILE
-Try 'ocaml-mdx deps --help' or 'ocaml-mdx --help' for more information.
-[124]
-```
 

@@ -1,13 +1,13 @@
 (lang dune 3.0)
 
-(name mdxpath)
+(name extissues1001)
 
 ; version field is optional
 ; (version 1.0.0)
 
 (using mdx 0.2)
 
-(generate_opam_files true)
+;(generate_opam_files true)
 
 ;(source (github K-Wgit/issue10000))
 
@@ -18,7 +18,7 @@
 (maintainers "K-Wgit")
 
 (package
- (name mdxpath)
+ (name extissues1001)
  (synopsis "mdx path resolution only downwards")
  (description "like I said")
  (depends
